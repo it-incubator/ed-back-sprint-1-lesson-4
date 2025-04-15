@@ -3,7 +3,6 @@ import { driverCollection } from '../../db/mongo.db';
 import { ObjectId, WithId } from 'mongodb';
 import { RepositoryNotFoundError } from '../../core/errors/repository-not-found.error';
 import { DriverAttributes } from '../application/dtos/driver-attributes';
-import { DriverQueryInput } from '../routes/input/driver-query.input';
 
 export const driversRepository = {
   async findByIdOrFail(id: string): Promise<WithId<Driver>> {

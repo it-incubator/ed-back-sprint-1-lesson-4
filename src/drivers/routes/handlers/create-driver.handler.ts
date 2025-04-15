@@ -15,10 +15,11 @@ export async function createDriverHandler(
     );
 
     const createdDriver =
-      await driversQueryRepository.findByIdOrFail(createdDriverId);
+      await driversQueryRepository.findById(createdDriverId);
 
-    const driverOutput =
-      driversQueryRepository.mapToDriverOutput(createdDriver);
+    const driverOutput = driversQueryRepository.mapToDriverOutput(
+      createdDriver!,
+    );
 
     res.status(HttpStatus.Created).send(driverOutput);
   } catch (e: unknown) {

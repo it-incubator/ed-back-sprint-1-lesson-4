@@ -47,15 +47,9 @@ export const ridesQueryRepository = {
     return { items, totalCount };
   },
 
-  async findByIdOrFail(id: string): Promise<WithId<Ride>> {
-    const res = await rideCollection.findOne({ _id: new ObjectId(id) });
-
-    if (!res) {
-      throw new RepositoryNotFoundError('Ride not exist');
-    }
-    return res;
+  async findById(id: string): Promise<WithId<Ride> | null> {
+    return rideCollection.findOne({ _id: new ObjectId(id) });
   },
-
   mapToRideListPaginatedOutput(
     rides: WithId<Ride>[],
     meta: { pageNumber: number; pageSize: number; totalCount: number },

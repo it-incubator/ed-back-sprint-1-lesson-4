@@ -1,7 +1,6 @@
 import { Driver } from '../domain/driver';
 import { driverCollection } from '../../db/mongo.db';
 import { ObjectId, WithId } from 'mongodb';
-import { RepositoryNotFoundError } from '../../core/errors/repository-not-found.error';
 import { DriverQueryInput } from '../routes/input/driver-query.input';
 import { DriverListPaginatedOutput } from '../routes/output/driver-list-paginated.output';
 import { DriverDataOutput } from '../routes/output/driver-data.output';
@@ -49,14 +48,10 @@ export const driversQueryRepository = {
     return { items, totalCount };
   },
 
-  async findByIdOrFail(id: string): Promise<WithId<Driver>> {
-    const res = await driverCollection.findOne({ _id: new ObjectId(id) });
-
-    if (!res) {
-      throw new RepositoryNotFoundError('Driver not exist');
-    }
-    return res;
+  async findById(id: string): Promise<WithId<Driver> | null> {
+    return driverCollection.findOne({ _id: new ObjectId(id) });
   },
+
   mapToDriverListPaginatedOutput(
     drivers: WithId<Driver>[],
     meta: { pageNumber: number; pageSize: number; totalCount: number },

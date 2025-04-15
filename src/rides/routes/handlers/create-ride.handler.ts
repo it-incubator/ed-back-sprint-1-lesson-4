@@ -12,10 +12,9 @@ export async function createRideHandler(
   try {
     const createdRideId = await ridesService.create(req.body.data.attributes);
 
-    const createdRide =
-      await ridesQueryRepository.findByIdOrFail(createdRideId);
+    const createdRide = await ridesQueryRepository.findById(createdRideId);
 
-    const rideOutput = ridesQueryRepository.mapToRideOutputUtil(createdRide);
+    const rideOutput = ridesQueryRepository.mapToRideOutputUtil(createdRide!);
 
     res.status(HttpStatus.Created).send(rideOutput);
   } catch (e: unknown) {
