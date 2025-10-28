@@ -4,13 +4,18 @@ import { errorsHandler } from '../../../core/errors/errors.handler';
 import { mapToRideListPaginatedOutput } from '../mappers/map-to-ride-list-paginated-output.util';
 import { RideQueryInput } from '../input/ride-query.input';
 import { setDefaultSortAndPaginationIfNotExist } from '../../../core/helpers/set-default-sort-and-pagination';
+import { matchedData } from 'express-validator';
 
 export async function getRideListHandler(
   req: Request<{}, {}, {}, RideQueryInput>,
   res: Response,
 ) {
   try {
-    const queryInput = setDefaultSortAndPaginationIfNotExist(req.query);
+    const sanitizedQuery = matchedData<RideQueryInput>(req, {
+      locations: ['query'],
+      includeOptionals: true,
+    });
+    const queryInput = setDefaultSortAndPaginationIfNotExist(sanitizedQuery);
 
     const { items, totalCount } = await ridesService.findMany(queryInput);
 

@@ -5,6 +5,8 @@
     "outDir": "./dist",
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
+    "sourceMap": true,
+    "inlineSources": true,
 
     "forceConsistentCasingInFileNames": true,
     "strict": true,

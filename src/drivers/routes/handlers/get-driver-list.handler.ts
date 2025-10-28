@@ -4,13 +4,19 @@ import { errorsHandler } from '../../../core/errors/errors.handler';
 import { mapToDriverListPaginatedOutput } from '../mappers/map-to-driver-list-paginated-output.util';
 import { DriverQueryInput } from '../input/driver-query.input';
 import { setDefaultSortAndPaginationIfNotExist } from '../../../core/helpers/set-default-sort-and-pagination';
+import { matchedData } from 'express-validator';
 
 export async function getDriverListHandler(
   req: Request<{}, {}, {}, DriverQueryInput>,
   res: Response,
 ) {
   try {
-    const queryInput = setDefaultSortAndPaginationIfNotExist(req.query);
+    const sanitizedQuery = matchedData<DriverQueryInput>(req, {
+      locations: ['query'],
+      includeOptionals: true,
+    }); //утилита для извечения трансформированных значений после валидатара
+    //в req.query остаются сырые квери параметры (строки)
+    const queryInput = setDefaultSortAndPaginationIfNotExist(sanitizedQuery);
 
     const { items, totalCount } = await driversService.findMany(queryInput);
 
