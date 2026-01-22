@@ -6,6 +6,7 @@ import { DriverQueryInput } from '../input/driver-query.input';
 import { setDefaultSortAndPaginationIfNotExist } from '../../../core/helpers/set-default-sort-and-pagination';
 import { matchedData } from 'express-validator';
 
+// TODO: Переписать     const queryInput = setDefaultSortAndPaginationIfNotExist(sanitizedQuery);
 export async function getDriverListHandler(
   req: Request<{}, {}, {}, DriverQueryInput>,
   res: Response,
