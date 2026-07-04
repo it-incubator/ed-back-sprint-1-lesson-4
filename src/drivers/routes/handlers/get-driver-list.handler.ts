@@ -1,22 +1,17 @@
 import { Request, Response } from 'express';
 import { driversService } from '../../application/drivers.service';
-import { errorsHandler } from '../../../core/errors/errors.handler';
+import { errorsHandler } from '../../../core/exceptions/errors.handler';
 import { mapToDriverListPaginatedOutput } from '../mappers/map-to-driver-list-paginated-output.util';
 import { DriverQueryInput } from '../input/driver-query.input';
-import { setDefaultSortAndPaginationIfNotExist } from '../../../core/helpers/set-default-sort-and-pagination';
-import { matchedData } from 'express-validator';
 
 export async function getDriverListHandler(
   req: Request<{}, {}, {}, DriverQueryInput>,
   res: Response,
 ) {
   try {
-    const sanitizedQuery = matchedData<DriverQueryInput>(req, {
-      locations: ['query'],
-      includeOptionals: true,
-    }); //утилита для извечения трансформированных значений после валидатара
-    //в req.query остаются сырые квери параметры (строки)
-    const queryInput = setDefaultSortAndPaginationIfNotExist(sanitizedQuery);
+    // req.query уже провалидирован и приведён к типам middleware'ами
+    // (paginationAndSorting + sanitizeQueryParams), поэтому используем его напрямую.
+    const queryInput = req.query;
 
     const { items, totalCount } = await driversService.findMany(queryInput);
 

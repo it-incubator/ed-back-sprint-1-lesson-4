@@ -1,11 +1,11 @@
 import { body } from 'express-validator';
 import { Currency } from '../domain/ride';
-import { resourceTypeValidation } from '../../core/middlewares/validation/resource-type.validation-middleware';
+import { resourceTypeValidation } from '../../core/middlewares/validation/resource-type.validation.middleware';
 import { ResourceType } from '../../core/types/resource-type';
 
 export const clientNameValidation = body('data.attributes.clientName')
   .isString()
-  .withMessage('status should be string')
+  .withMessage('clientName should be string')
   .trim()
   .isLength({ min: 3, max: 100 });
 
@@ -25,7 +25,9 @@ export const currencyValidation = body('data.attributes.currency')
   .withMessage('currency should be string')
   .trim()
   .isIn(Object.values(Currency)) // Проверка на допустимые значения
-  .withMessage('currency must be either "usd" or "eu"');
+  .withMessage(
+    `currency must be one of: ${Object.values(Currency).join(', ')}`,
+  );
 
 export const startAddressValidation = body('data.attributes.fromAddress')
   .isString()

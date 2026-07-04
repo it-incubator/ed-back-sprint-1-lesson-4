@@ -2,14 +2,13 @@ import { driversRepository } from '../repositories/drivers.repository';
 import { WithId } from 'mongodb';
 import { Driver } from '../domain/driver';
 import { ridesRepository } from '../../rides/repositories/rides.repository';
-import { DomainError } from '../../core/errors/domain.error';
+import { DomainException } from '../../core/exceptions/domain.exception';
 import { DriverAttributes } from './dtos/driver-attributes';
 import { DriverQueryInput } from '../routes/input/driver-query.input';
+import { DriverErrorCode } from '../enums/domain.codes';
 
-export enum DriverErrorCode {
-  HasActiveRide = 'DRIVER_HAS_ACTIVE_RIDE',
-}
-
+// BLL модуля водителей. Подход обработки ошибок — throw + custom exceptions,
+// которые на уровне хендлера ловит errorsHandler. Хендлеры остаются презентационным слоем.
 export const driversService = {
   async findMany(
     queryDto: DriverQueryInput,
@@ -49,7 +48,7 @@ export const driversService = {
     const activeRide = await ridesRepository.findActiveRideByDriverId(id);
 
     if (activeRide) {
-      throw new DomainError(
+      throw new DomainException(
         `Driver has an active ride. Complete or cancel the ride first`,
         DriverErrorCode.HasActiveRide,
       );

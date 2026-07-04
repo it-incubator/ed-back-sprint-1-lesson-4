@@ -1,7 +1,7 @@
 import { Driver } from '../domain/driver';
-import { driverCollection } from '../../db/mongo.db';
+import { driverCollection } from '../../db/collections';
 import { ObjectId, WithId } from 'mongodb';
-import { RepositoryNotFoundError } from '../../core/errors/repository-not-found.error';
+import { NotFoundException } from '../../core/exceptions/not-found.exception';
 import { DriverAttributes } from '../application/dtos/driver-attributes';
 import { DriverQueryInput } from '../routes/input/driver-query.input';
 
@@ -22,12 +22,20 @@ export const driversRepository = {
     const skip = (pageNumber - 1) * pageSize;
     const filter: any = {};
 
-    if (searchDriverNameTerm) {
-      filter.name = { $regex: searchDriverNameTerm, $options: 'i' };
-    }
-
-    if (searchDriverEmailTerm) {
-      filter.email = { $regex: searchDriverEmailTerm, $options: 'i' };
+    // Поиск по имени/email объединяем через $or: совпадение хотя бы по одному полю.
+    if (searchDriverNameTerm || searchDriverEmailTerm) {
+      filter.$or = [];
+      if (searchDriverNameTerm) {
+        // Встроенные операторы mongodb: $regex + $options 'i' — поиск без учёта регистра.
+        filter.$or.push({
+          name: { $regex: searchDriverNameTerm, $options: 'i' },
+        });
+      }
+      if (searchDriverEmailTerm) {
+        filter.$or.push({
+          email: { $regex: searchDriverEmailTerm, $options: 'i' },
+        });
+      }
     }
 
     if (searchVehicleMakeTerm) {
@@ -54,7 +62,7 @@ export const driversRepository = {
     const res = await driverCollection.findOne({ _id: new ObjectId(id) });
 
     if (!res) {
-      throw new RepositoryNotFoundError('Driver not exist');
+      throw new NotFoundException('Driver not exist');
     }
     return res;
   },
@@ -88,7 +96,7 @@ export const driversRepository = {
     );
 
     if (updateResult.matchedCount < 1) {
-      throw new RepositoryNotFoundError('Driver not exist');
+      throw new NotFoundException('Driver not exist');
     }
 
     return;
@@ -100,7 +108,7 @@ export const driversRepository = {
     });
 
     if (deleteResult.deletedCount < 1) {
-      throw new RepositoryNotFoundError('Driver not exist');
+      throw new NotFoundException('Driver not exist');
     }
 
     return;

@@ -7,9 +7,10 @@ import { generateBasicAuthToken } from '../../utils/generate-admin-auth-token';
 import { HttpStatus } from '../../../src/core/types/http-statuses';
 import { clearDb } from '../../utils/clear-db';
 import { createRide } from '../../utils/rides/create-ride';
-import { RIDES_PATH } from '../../../src/core/paths/paths';
+import { RIDES_PATH } from '../../../src/rides/constants/rides.paths';
 import { getRideById } from '../../utils/rides/get-ride-by-id';
 import { runDB, stopDb } from '../../../src/db/mongo.db';
+import { SETTINGS } from '../../../src/settings/config';
 
 describe('Rides API', () => {
   const app = express();
@@ -18,7 +19,7 @@ describe('Rides API', () => {
   const adminToken = generateBasicAuthToken();
 
   beforeAll(async () => {
-    await runDB('mongodb://localhost:27017/db-test');
+    await runDB(SETTINGS.MONGO_URL);
     await clearDb(app);
   });
 

@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { HttpStatus } from '../../../core/types/http-statuses';
 import { mapToDriverOutput } from '../mappers/map-to-driver-output.util';
 import { driversService } from '../../application/drivers.service';
-import { errorsHandler } from '../../../core/errors/errors.handler';
+import { errorsHandler } from '../../../core/exceptions/errors.handler';
 
 export async function getDriverHandler(
   req: Request<{ id: string }>,

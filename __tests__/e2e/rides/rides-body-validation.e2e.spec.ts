@@ -8,9 +8,10 @@ import { HttpStatus } from '../../../src/core/types/http-statuses';
 import { Currency } from '../../../src/rides/domain/ride';
 import { clearDb } from '../../utils/clear-db';
 import { createRide } from '../../utils/rides/create-ride';
-import { RIDES_PATH } from '../../../src/core/paths/paths';
+import { RIDES_PATH } from '../../../src/rides/constants/rides.paths';
 import { runDB, stopDb } from '../../../src/db/mongo.db';
 import { ResourceType } from '../../../src/core/types/resource-type';
+import { SETTINGS } from '../../../src/settings/config';
 
 describe('Rides API body validation check', () => {
   const app = express();
@@ -19,7 +20,7 @@ describe('Rides API body validation check', () => {
   const adminToken = generateBasicAuthToken();
 
   beforeAll(async () => {
-    await runDB('mongodb://localhost:27017/db-test');
+    await runDB(SETTINGS.MONGO_URL);
     await clearDb(app);
   });
 

@@ -1,33 +1,30 @@
-import {
-  FieldValidationError,
-  ValidationError,
-  validationResult,
-} from 'express-validator';
+import { ValidationError, validationResult } from 'express-validator';
 import { NextFunction, Request, Response } from 'express';
 import { ValidationErrorType } from '../../types/validationError';
 import { HttpStatus } from '../../types/http-statuses';
 import { ValidationErrorListOutput } from '../../types/validationError.dto';
 
+// Оборачивает список ошибок в единый формат JSON:API-ответа: { errors: [...] }.
 export const createErrorMessages = (
   errors: ValidationErrorType[],
 ): ValidationErrorListOutput => {
   return {
     errors: errors.map((error) => ({
       status: error.status,
-      detail: error.detail, //error message
-      source: { pointer: error.source ?? '' }, //error field
-      code: error.code ?? null, //domain error code
+      detail: error.detail, // текст ошибки
+      source: { pointer: error.source ?? '' }, // поле, где ошибка
+      code: error.code ?? null, // код доменной ошибки
     })),
   };
 };
 
-const formaValidationError = (error: ValidationError): ValidationErrorType => {
-  const expressError = error as unknown as FieldValidationError;
-
+// Приводит ошибку express-validator к нашему формату.
+// У ошибок типа 'field' (body/param/query) есть путь к полю.
+const formatValidationError = (error: ValidationError): ValidationErrorType => {
   return {
     status: HttpStatus.BadRequest,
-    source: expressError.path,
-    detail: expressError.msg,
+    source: error.type === 'field' ? error.path : '',
+    detail: error.msg,
   };
 };
 
@@ -37,7 +34,7 @@ export const inputValidationResultMiddleware = (
   next: NextFunction,
 ) => {
   const errors = validationResult(req)
-    .formatWith(formaValidationError)
+    .formatWith(formatValidationError)
     .array({ onlyFirstError: true });
 
   if (errors.length > 0) {

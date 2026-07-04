@@ -5,7 +5,7 @@ import { Express } from 'express';
 import { RideAttributes } from '../../../src/rides/application/dtos/ride-attributes';
 import { createDriver } from '../drivers/create-driver';
 import { generateBasicAuthToken } from '../generate-admin-auth-token';
-import { RIDES_PATH } from '../../../src/core/paths/paths';
+import { RIDES_PATH } from '../../../src/rides/constants/rides.paths';
 import { getRideDto } from './get-ride-dto';
 import { ResourceType } from '../../../src/core/types/resource-type';
 import { RideOutput } from '../../../src/rides/routes/output/ride.output';

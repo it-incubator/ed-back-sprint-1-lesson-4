@@ -1,9 +1,12 @@
 import { Ride } from '../domain/ride';
-import { rideCollection } from '../../db/mongo.db';
+import { rideCollection } from '../../db/collections';
 import { ObjectId, WithId } from 'mongodb';
-import { RepositoryNotFoundError } from '../../core/errors/repository-not-found.error';
 import { RideQueryInput } from '../routes/input/ride-query.input';
 
+// Репозиторий отвечает ТОЛЬКО за доступ к данным (CRUD) и НЕ бросает доменных ошибок.
+// Модуль rides работает по подходу "app notification result": решение о статусе
+// принимает сервис (возвращает Result), поэтому findById возвращает null,
+// а finishRide — boolean (найдено/обновлено).
 export const ridesRepository = {
   async findMany(
     queryDto: RideQueryInput,
@@ -47,31 +50,24 @@ export const ridesRepository = {
   async findById(id: string): Promise<WithId<Ride> | null> {
     return rideCollection.findOne({ _id: new ObjectId(id) });
   },
-  async findByIdOrFail(id: string): Promise<WithId<Ride>> {
-    const res = await rideCollection.findOne({ _id: new ObjectId(id) });
 
-    if (!res) {
-      throw new RepositoryNotFoundError('Ride not exist');
-    }
-    return res;
-  },
+  // Активная поездка водителя — без даты завершения. driverId лежит в поддокументе driver.id.
   async findActiveRideByDriverId(
     driverId: string,
   ): Promise<WithId<Ride> | null> {
-    return rideCollection.findOne({ driverId, finishedAt: null });
+    return rideCollection.findOne({ 'driver.id': driverId, finishedAt: null });
   },
 
-  async createRide(newRide: Ride): Promise<string> {
+  async createRide(newRide: Ride): Promise<WithId<Ride>> {
     const insertResult = await rideCollection.insertOne(newRide);
 
-    return insertResult.insertedId.toString();
+    return { ...newRide, _id: insertResult.insertedId };
   },
 
-  async finishRide(id: string, finishedAt: Date) {
+  // Возвращает true, если поездка найдена и обновлена, иначе false.
+  async finishRide(id: string, finishedAt: Date): Promise<boolean> {
     const updateResult = await rideCollection.updateOne(
-      {
-        _id: new ObjectId(id),
-      },
+      { _id: new ObjectId(id) },
       {
         $set: {
           finishedAt,
@@ -80,10 +76,6 @@ export const ridesRepository = {
       },
     );
 
-    if (updateResult.matchedCount < 1) {
-      throw new Error('Ride not exist');
-    }
-
-    return;
+    return updateResult.matchedCount > 0;
   },
 };
