@@ -1,6 +1,6 @@
 import express from 'express';
 import { setupApp } from './setup-app';
-import { SETTINGS } from './core/settings/settings';
+import { SETTINGS } from './settings/config';
 import { runDB } from './db/mongo.db';
 
 // startApp + setup

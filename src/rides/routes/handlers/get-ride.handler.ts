@@ -1,7 +1,8 @@
 import { Request, Response } from 'express';
-import { errorsHandler } from '../../../core/errors/errors.handler';
-import { ridesQueryRepository } from '../../repositories/rides.query-repositoty';
-import { RepositoryNotFoundError } from '../../../core/errors/repository-not-found.error';
+import { HttpStatus } from '../../../core/types/http-statuses';
+import { ridesQueryRepository } from '../../repositories/rides.query-repository';
+import { notFoundResult } from '../../../core/result/result';
+import { sendErrorResult } from '../../../core/result/send-error-result';
 
 export async function getRideHandler(
   req: Request<{ id: string }>,
@@ -10,15 +11,18 @@ export async function getRideHandler(
   try {
     const id = req.params.id;
 
+    // Чтение через query-репозиторий; отсутствие поездки отдаём в едином формате
+    // ошибок Result-подхода модуля rides.
     const ride = await ridesQueryRepository.findById(id);
     if (!ride) {
-      throw new RepositoryNotFoundError('Ride not exist');
+      sendErrorResult(notFoundResult('Ride not exist'), res);
+      return;
     }
 
-    const rideOutput = ridesQueryRepository.mapToRideOutputUtil(ride);
+    const rideOutput = ridesQueryRepository.mapToRideOutput(ride);
 
     res.send(rideOutput);
-  } catch (e: unknown) {
-    errorsHandler(e, res);
+  } catch {
+    res.sendStatus(HttpStatus.InternalServerError);
   }
 }

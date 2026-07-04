@@ -9,13 +9,14 @@ import { generateBasicAuthToken } from '../../utils/generate-admin-auth-token';
 import { getDriverDto } from '../../utils/drivers/get-driver-dto';
 import { clearDb } from '../../utils/clear-db';
 import { createDriver } from '../../utils/drivers/create-driver';
-import { DRIVERS_PATH } from '../../../src/core/paths/paths';
+import { DRIVERS_PATH } from '../../../src/drivers/constants/drivers.paths';
 import { getDriverById } from '../../utils/drivers/get-driver-by-id';
 import { runDB, stopDb } from '../../../src/db/mongo.db';
 import { DriverAttributes } from '../../../src/drivers/application/dtos/driver-attributes';
 import { DriverCreateInput } from '../../../src/drivers/routes/input/driver-create.input';
 import { ResourceType } from '../../../src/core/types/resource-type';
 import { DriverUpdateInput } from '../../../src/drivers/routes/input/driver-update.input';
+import { SETTINGS } from '../../../src/settings/config';
 
 describe('Driver API body validation check', () => {
   const app = express();
@@ -26,7 +27,7 @@ describe('Driver API body validation check', () => {
   const adminToken = generateBasicAuthToken();
 
   beforeAll(async () => {
-    await runDB('mongodb://localhost:27017/db-test');
+    await runDB(SETTINGS.MONGO_URL);
     await clearDb(app);
   });
 

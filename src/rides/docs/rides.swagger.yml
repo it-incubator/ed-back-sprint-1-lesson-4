@@ -3,11 +3,6 @@ info:
   title: API Documentation
   version: 1.0.0
 
-securitySchemes:
-  BasicAuth:
-    type: http
-    scheme: basic
-
 tags:
   - name: Rides
     description: API for managing rides
@@ -69,13 +64,25 @@ paths:
               $ref: '#/components/schemas/RideCreateInput'
       responses:
         201:
-          description: Ride successfully created for an existing driver with status online
+          description: Ride successfully created for an existing driver
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/RideOutput'
         400:
-          description: Validation error or the driver does not exist or the driver's status is not online
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorListOutput'
+        404:
+          description: Driver not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorListOutput'
+        422:
+          description: The driver already has an active ride
           content:
             application/json:
               schema:
@@ -126,14 +133,14 @@ paths:
       responses:
         204:
           description: Ride finished successfully
-        400:
-          description: The ride has already been finished
+        404:
+          description: Ride not found
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ValidationErrorListOutput'
-        404:
-          description: Ride not found
+        422:
+          description: The ride has already been finished
           content:
             application/json:
               schema:

@@ -8,7 +8,7 @@ import { setupApp } from '../../../src/setup-app';
 import { HttpStatus } from '../../../src/core/types/http-statuses';
 
 import { generateBasicAuthToken } from '../../utils/generate-admin-auth-token';
-import { DRIVERS_PATH } from '../../../src/core/paths/paths';
+import { DRIVERS_PATH } from '../../../src/drivers/constants/drivers.paths';
 import { createDriver } from '../../utils/drivers/create-driver';
 import { getDriverDto } from '../../utils/drivers/get-driver-dto';
 import { clearDb } from '../../utils/clear-db';
@@ -16,6 +16,7 @@ import { getDriverById } from '../../utils/drivers/get-driver-by-id';
 import { updateDriver } from '../../utils/drivers/update-driver';
 import { runDB, stopDb } from '../../../src/db/mongo.db';
 import { DriverAttributes } from '../../../src/drivers/application/dtos/driver-attributes';
+import { SETTINGS } from '../../../src/settings/config';
 
 describe('Driver API', () => {
   const app = express();
@@ -24,7 +25,7 @@ describe('Driver API', () => {
   const adminToken = generateBasicAuthToken();
 
   beforeAll(async () => {
-    await runDB('mongodb://localhost:27017/db-test');
+    await runDB(SETTINGS.MONGO_URL);
     await clearDb(app);
   });
 

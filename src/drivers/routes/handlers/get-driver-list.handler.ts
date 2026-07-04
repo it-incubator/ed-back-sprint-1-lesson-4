@@ -1,15 +1,16 @@
 import { Request, Response } from 'express';
-import { errorsHandler } from '../../../core/errors/errors.handler';
+import { errorsHandler } from '../../../core/exceptions/errors.handler';
 import { DriverQueryInput } from '../input/driver-query.input';
-import { setDefaultSortAndPaginationIfNotExist } from '../../../core/helpers/set-default-sort-and-pagination';
-import { driversQueryRepository } from '../../repositories/drivers.query-repositoty';
+import { driversQueryRepository } from '../../repositories/drivers.query-repository';
 
 export async function getDriverListHandler(
   req: Request<{}, {}, {}, DriverQueryInput>,
   res: Response,
 ) {
   try {
-    const queryInput = setDefaultSortAndPaginationIfNotExist(req.query);
+    // req.query уже провалидирован и приведён к типам middleware'ами
+    // (paginationAndSorting + sanitizeQueryParams), поэтому используем его напрямую.
+    const queryInput = req.query;
 
     const { items, totalCount } =
       await driversQueryRepository.findMany(queryInput);

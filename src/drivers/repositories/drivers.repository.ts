@@ -1,17 +1,15 @@
 import { Driver } from '../domain/driver';
-import { driverCollection } from '../../db/mongo.db';
+import { driverCollection } from '../../db/collections';
 import { ObjectId, WithId } from 'mongodb';
-import { RepositoryNotFoundError } from '../../core/errors/repository-not-found.error';
+import { NotFoundException } from '../../core/exceptions/not-found.exception';
 import { DriverAttributes } from '../application/dtos/driver-attributes';
 
+// Command-репозиторий (сторона записи CQRS): только изменения данных + точечный
+// findById для бизнес-правил команд. Чтение для представления — в drivers.query-repository.
 export const driversRepository = {
-  async findByIdOrFail(id: string): Promise<WithId<Driver>> {
-    const res = await driverCollection.findOne({ _id: new ObjectId(id) });
-
-    if (!res) {
-      throw new RepositoryNotFoundError('Driver not exist');
-    }
-    return res;
+  // Используется командами других модулей (напр. проверка водителя при создании поездки).
+  async findById(id: string): Promise<WithId<Driver> | null> {
+    return driverCollection.findOne({ _id: new ObjectId(id) });
   },
 
   async create(newDriver: Driver): Promise<string> {
@@ -43,7 +41,7 @@ export const driversRepository = {
     );
 
     if (updateResult.matchedCount < 1) {
-      throw new RepositoryNotFoundError('Driver not exist');
+      throw new NotFoundException('Driver not exist');
     }
 
     return;
@@ -55,7 +53,7 @@ export const driversRepository = {
     });
 
     if (deleteResult.deletedCount < 1) {
-      throw new RepositoryNotFoundError('Driver not exist');
+      throw new NotFoundException('Driver not exist');
     }
 
     return;

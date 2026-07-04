@@ -1,7 +1,8 @@
 import { Request, Response } from 'express';
 import { HttpStatus } from '../../../core/types/http-statuses';
 import { ridesService } from '../../application/rides.service';
-import { errorsHandler } from '../../../core/errors/errors.handler';
+import { ResultStatus } from '../../../core/result/result';
+import { sendErrorResult } from '../../../core/result/send-error-result';
 
 export async function finishRideHandler(
   req: Request<{ id: string }, {}, {}>,
@@ -10,10 +11,15 @@ export async function finishRideHandler(
   try {
     const id = req.params.id;
 
-    await ridesService.finishRide(id);
+    const result = await ridesService.finishRide(id);
+
+    if (result.status !== ResultStatus.Success) {
+      sendErrorResult(result, res);
+      return;
+    }
 
     res.sendStatus(HttpStatus.NoContent);
-  } catch (e: unknown) {
-    errorsHandler(e, res);
+  } catch {
+    res.sendStatus(HttpStatus.InternalServerError);
   }
 }

@@ -1,7 +1,7 @@
 import { body } from 'express-validator';
 import { VehicleFeature } from '../domain/driver';
-import { dataIdMatchValidation } from '../../core/middlewares/validation/params-id.validation-middleware';
-import { resourceTypeValidation } from '../../core/middlewares/validation/resource-type.validation-middleware';
+import { dataIdMatchValidation } from '../../core/middlewares/validation/params-id.validation.middleware';
+import { resourceTypeValidation } from '../../core/middlewares/validation/resource-type.validation.middleware';
 import { ResourceType } from '../../core/types/resource-type';
 
 const nameValidation = body('data.attributes.name')

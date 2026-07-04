@@ -1,19 +1,12 @@
 import { query } from 'express-validator';
 import { SortDirection } from '../../types/sort-direction';
-import { PaginationAndSorting } from '../../types/pagination-and-sorting';
 
-// Дефолтные значения
+// Дефолтные значения пагинации/сортировки. Задаются через .default() в валидаторах,
+// поэтому после валидации query всегда содержит корректные значения — отдельная
+// функция "проставить дефолты" больше не нужна.
 const DEFAULT_PAGE_NUMBER = 1;
 const DEFAULT_PAGE_SIZE = 10;
 const DEFAULT_SORT_DIRECTION = SortDirection.Desc;
-const DEFAULT_SORT_BY = 'createdAt';
-
-export const paginationAndSortingDefault: PaginationAndSorting<string> = {
-  pageNumber: DEFAULT_PAGE_NUMBER,
-  pageSize: DEFAULT_PAGE_SIZE,
-  sortBy: DEFAULT_SORT_BY,
-  sortDirection: DEFAULT_SORT_DIRECTION,
-};
 
 export function paginationAndSortingValidation<T extends string>(
   sortFieldsEnum: Record<string, T>,

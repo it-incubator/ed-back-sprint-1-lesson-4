@@ -2,7 +2,7 @@
 import request from 'supertest';
 import { Express } from 'express';
 import { getDriverDto } from './get-driver-dto';
-import { DRIVERS_PATH } from '../../../src/core/paths/paths';
+import { DRIVERS_PATH } from '../../../src/drivers/constants/drivers.paths';
 import { generateBasicAuthToken } from '../generate-admin-auth-token';
 import { DriverAttributes } from '../../../src/drivers/application/dtos/driver-attributes';
 import { ResourceType } from '../../../src/core/types/resource-type';

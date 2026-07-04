@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
 import { HttpStatus } from '../../../core/types/http-statuses';
 import { driversService } from '../../application/drivers.service';
-import { errorsHandler } from '../../../core/errors/errors.handler';
+import { errorsHandler } from '../../../core/exceptions/errors.handler';
 import { DriverCreateInput } from '../input/driver-create.input';
-import { driversQueryRepository } from '../../repositories/drivers.query-repositoty';
+import { driversQueryRepository } from '../../repositories/drivers.query-repository';
 
 export async function createDriverHandler(
   req: Request<{}, {}, DriverCreateInput>,

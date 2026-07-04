@@ -1,7 +1,4 @@
-import {
-  ADMIN_PASSWORD,
-  ADMIN_USERNAME,
-} from '../../src/auth/middlewares/super-admin.guard-middleware';
+import { ADMIN_PASSWORD, ADMIN_USERNAME } from '../../src/settings/config';
 
 export function generateBasicAuthToken() {
   const credentials = `${ADMIN_USERNAME}:${ADMIN_PASSWORD}`;

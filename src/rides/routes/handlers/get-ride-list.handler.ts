@@ -1,15 +1,16 @@
 import { Request, Response } from 'express';
-import { errorsHandler } from '../../../core/errors/errors.handler';
+import { HttpStatus } from '../../../core/types/http-statuses';
 import { RideQueryInput } from '../input/ride-query.input';
-import { setDefaultSortAndPaginationIfNotExist } from '../../../core/helpers/set-default-sort-and-pagination';
-import { ridesQueryRepository } from '../../repositories/rides.query-repositoty';
+import { ridesQueryRepository } from '../../repositories/rides.query-repository';
 
 export async function getRideListHandler(
   req: Request<{}, {}, {}, RideQueryInput>,
   res: Response,
 ) {
   try {
-    const queryInput = setDefaultSortAndPaginationIfNotExist(req.query);
+    // req.query уже провалидирован и приведён к типам middleware'ами
+    // (paginationAndSorting + sanitizeQueryParams).
+    const queryInput = req.query;
 
     const { items, totalCount } =
       await ridesQueryRepository.findMany(queryInput);
@@ -22,8 +23,9 @@ export async function getRideListHandler(
         totalCount,
       },
     );
+
     res.send(rideListOutput);
-  } catch (e: unknown) {
-    errorsHandler(e, res);
+  } catch {
+    res.sendStatus(HttpStatus.InternalServerError);
   }
 }
